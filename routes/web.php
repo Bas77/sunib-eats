@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RestaurantController;
@@ -22,4 +22,4 @@ Route::get('/', function () {
 // points it to the correct controller action, and gives it the name
 // 'restaurants.index' so the route() helper can find it.
 Route::get('/', [RestaurantController::class, 'index'])->name('restaurants.index');
-
+Route::get('/restaurants/{restaurant:slug}', [RestaurantController::class, 'show'])->name('restaurants.show');

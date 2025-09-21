@@ -9,7 +9,6 @@
     }
 
     .hero {
-        /* ✅ Recommended: Use the CSS variable */
         background: var(--gradient-hero);
         padding: 5rem 1rem;
         color: white;
@@ -44,15 +43,6 @@
         z-index: 2;
     }
 
-    .made-for-students-badge {
-        display: inline-block;
-        background-color: rgba(255, 255, 255, 0.2);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-    }
 
     /* Search Form Styling */
     .search-form-container {
@@ -221,13 +211,11 @@
         </p>
 
         {{-- Restaurant cards section --}}
-        {{-- Restaurant cards section --}}
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             @forelse ($restaurants as $restaurant)
                 <div class="col d-flex">
-                    <a href="#" class="card h-100 shadow-sm border-0 restaurant-card w-100">
+                    <a href="{{ route('restaurants.show', $restaurant->slug) }}" class="card h-100 shadow-sm border-0 restaurant-card w-100">
                         
-                        {{-- 👇 MODIFIED HTML STRUCTURE FOR THE IMAGE 👇 --}}
                         <div class="card-img-container">
                             <img src="{{ $restaurant->image_url }}" alt="{{ $restaurant->name }}">
                         </div>
@@ -236,10 +224,10 @@
                             <div>
                                 <h5 class="card-title fw-bold">{{ $restaurant->name }}</h5>
                                 <p class="card-text text-muted">
-                                    <i class="bi bi-tag-fill"></i> {{ $restaurant->cuisine }} &middot; <i class="bi bi-geo-alt-fill"></i> {{ $restaurant->area }}
+                                    <i class="bi bi-geo-alt-fill"></i> {{ $restaurant->area }}  &middot; <i class="bi bi-pin-map-fill"></i> {{ number_format($restaurant->distance, 1) }} km 
                                 </p>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center mt-auto pt-3">
+                            <div class="d-flex   justify-content-between align-items-center mt-auto pt-3">
                                 <span class="fw-bold text-warning">
                                     <i class="bi bi-star-fill"></i> {{ number_format($restaurant->rating, 1) }}
                                 </span>
