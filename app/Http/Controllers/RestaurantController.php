@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Restaurant;
+use App\Models\ReviewVote;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 class RestaurantController extends Controller
@@ -47,8 +49,27 @@ class RestaurantController extends Controller
 
     public function show(Restaurant $restaurant)
     {
-        // For the "Nearby" section, you could add logic here to find restaurants
-        // with a similar 'area' but excluding the current one.
+        // Eager load the reviews and the user for each review
+        $reviews = $restaurant->reviews()->with('user')->latest()->get();
+
+        // Populate userVotes for the authenticated user
+        $userVotes = auth()->check()
+            ? ReviewVote::where('user_id', auth()->id())
+                ->whereIn('review_id', $reviews->pluck('id'))
+                ->pluck('vote_type', 'review_id')
+                ->mapWithKeys(function ($voteType, $reviewId) {
+                    return [$reviewId => $voteType];
+                })
+                ->toArray()
+            : [];
+
+        // Debug: Log the $userVotes array
+        Log::debug('User votes for restaurant ' . $restaurant->id, [
+            'user_id' => auth()->id(),
+            'review_ids' => $reviews->pluck('id')->toArray(),
+            'userVotes' => $userVotes
+        ]);
+
         $nearbyRestaurants = Restaurant::where('area', $restaurant->area)
             ->where('id', '!=', $restaurant->id)
             ->take(4)
@@ -56,7 +77,9 @@ class RestaurantController extends Controller
 
         return view('restaurants.show', [
             'restaurant' => $restaurant,
-            'nearby' => $nearbyRestaurants
+            'reviews' => $reviews,
+            'nearby' => $nearbyRestaurants,
+            'userVotes' => $userVotes // Explicitly pass userVotes
         ]);
     }
 }

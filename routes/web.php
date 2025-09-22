@@ -2,7 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RestaurantController;
+use App\Http\Controllers\ReviewController;
 
+
+Auth::routes();
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,3 +26,9 @@ Route::get('/', function () {
 // 'restaurants.index' so the route() helper can find it.
 Route::get('/', [RestaurantController::class, 'index'])->name('restaurants.index');
 Route::get('/restaurants/{restaurant:slug}', [RestaurantController::class, 'show'])->name('restaurants.show');
+Route::post('/reviews/{review}/vote', [ReviewController::class, 'vote'])->name('reviews.vote');
+
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
