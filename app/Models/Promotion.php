@@ -23,11 +23,13 @@ class Promotion extends Model
         'end_date' => 'date',
     ];
 
+    // Satu promo pasti punya satu restaurant
     public function restaurant()
     {
         return $this->belongsTo(Restaurant::class);
     }
 
+    // Filter promo yang masih aktif
     public function scopeActive($query)
     {
         return $query->whereDate('start_date', '<=', now())

@@ -11,13 +11,15 @@ class Category extends Model
 
     protected $fillable = ['name', 'type'];
 
+    // Satu kategori bisa ada di banyak review, dan satu review bisa punya banyak kategori
     public function reviews()
     {
-        return $this->belongsToMany(Review::class, 'category_review');
+        return $this->belongsToMany(Review::class, 'category_review'); // Many to many
     }
 
+    // Satu kategori bisa dimiliki banyak restoran
     public function restaurants()
     {
-        return $this->belongsToMany(Restaurant::class, 'category_restaurant');
+        return $this->belongsToMany(Restaurant::class, 'category_restaurant'); // Many to many
     }
 }

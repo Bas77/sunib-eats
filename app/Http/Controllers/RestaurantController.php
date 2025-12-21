@@ -44,6 +44,7 @@ class RestaurantController extends Controller
     public function show(Restaurant $restaurant, Request $request)
     {
         $sort = $request->query('sort', 'popular');
+        // Default sorting komentar adalah popular jika tidak ada request khusus
 
         $restaurant->load([
             'promotions' => function ($query) {
@@ -51,8 +52,9 @@ class RestaurantController extends Controller
             },
             'reviews' => function ($query) use ($sort) {
                 $query->with(['user', 'images'])
-                    ->withSum('votes', 'vote_value');
+                    ->withSum('votes', 'vote_value'); // Hitung total vote
 
+                // Logic sorting komentar (Popular/Recent/Oldest)
                 if ($sort === 'recent') {
                     $query->latest();
                 } elseif ($sort === 'oldest') {
@@ -72,6 +74,7 @@ class RestaurantController extends Controller
         $categories = Category::where('type', '!=', 'price_range')
             ->get()
             ->groupBy('type');
+        // Data kategori untuk display di sidebar filter
 
         $restaurants = Restaurant::query()
             ->search($request->input('search'))

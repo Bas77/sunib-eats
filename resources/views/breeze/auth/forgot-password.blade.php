@@ -1,25 +1,53 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+    <div class="text-center mb-4">
+        <h4 class="fw-bold">Lupa Password?</h4>
+        <p class="text-muted small">
+            Masukkan email dan nomor HP untuk reset password.
+        </p>
     </div>
 
-    <!-- Session Status -->
-    <x-breeze::auth-session-status class="mb-4" :status="session('status')" />
+    <x-auth-session-status class="mb-4" :status="session('status')" />
 
     <form method="POST" action="{{ route('password.email') }}">
         @csrf
 
-        <!-- Email Address -->
-        <div>
-            <x-breeze::input-label for="email" :value="__('Email')" />
-            <x-breeze::text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-breeze::input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="form-floating mb-3">
+            <input
+                type="email"
+                class="form-control @error('email') is-invalid @enderror"
+                id="email"
+                name="email"
+                placeholder="name@example.com"
+                value="{{ old('email') }}"
+                required
+                autofocus>
+            <label for="email">Email Address</label>
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-breeze::primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-breeze::primary-button>
+        <div class="form-floating mb-4">
+            <input
+                type="text"
+                class="form-control @error('phone_number') is-invalid @enderror"
+                id="phone_number"
+                name="phone_number"
+                placeholder="08xxxxxxxxxx"
+                value="{{ old('phone_number') }}"
+                required>
+            <label for="phone_number">Phone Number</label>
+            <x-input-error :messages="$errors->get('phone_number')" class="mt-2" />
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                Reset Password
+            </button>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ route('login') }}" class="small fw-bold text-decoration-none">
+                Kembali ke Login
+            </a>
         </div>
     </form>
 </x-guest-layout>

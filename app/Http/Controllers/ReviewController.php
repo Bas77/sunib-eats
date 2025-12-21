@@ -21,10 +21,10 @@ class ReviewController extends Controller
             'content' => 'required|string|max:500',
             'price_per_portion' => 'required|numeric|min:1000',
             'images' => ['nullable', 'array', 'max:3'],
-            'images.*' => ['image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'images.*' => ['image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ], [
             'images.max' => 'Maksimal hanya boleh mengupload 3 foto.',
-            'images.*.max' => 'Ukuran setiap foto tidak boleh lebih dari 2MB.'
+            'images.*.max' => 'Ukuran setiap foto tidak boleh lebih dari 5MB.'
         ]);
 
         $existingReview = Review::withTrashed()
@@ -43,14 +43,12 @@ class ReviewController extends Controller
             if ($existingReview) {
                 if ($existingReview->trashed()) {
                     $existingReview->restore();
-
                     $existingReview->update([
                         'rating' => $validated['rating'],
                         'content' => $validated['content'],
                         'price_per_portion' => $validated['price_per_portion'],
                         'created_at' => now(),
                     ]);
-
                     foreach ($existingReview->images as $oldImage) {
                         $oldImage->delete();
                     }
@@ -69,7 +67,6 @@ class ReviewController extends Controller
 
             if (isset($review) && $request->hasFile('images')) {
                 foreach ($request->file('images') as $photo) {
-                    // Use cloudinary() helper instead of Facade
                     $result = cloudinary()->uploadApi()->upload($photo->getRealPath(), [
                         'folder' => 'reviews'
                     ]);
@@ -95,23 +92,21 @@ class ReviewController extends Controller
         if ($review->user_id !== Auth::id()) abort(403);
 
         $countExisting = $review->images()->count();
-
         $deleteImageIds = $request->input('deleted_images', []);
         $countToDelete = is_array($deleteImageIds) ? count(array_filter($deleteImageIds)) : 0;
-
         $countNew = $request->hasFile('new_images') ? count($request->file('new_images')) : 0;
 
         $finalImageCount = ($countExisting - $countToDelete) + $countNew;
 
         if ($finalImageCount > 3) {
-            return back()->with('error', 'Total foto tidak boleh lebih dari 3. Silakan hapus beberapa foto lama sebelum menambah yang baru.');
+            return back()->with('error', 'Total foto tidak boleh lebih dari 3. Silakan hapus beberapa foto lama.');
         }
 
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'content' => 'required|string',
             'new_images' => ['nullable', 'array'],
-            'new_images.*' => ['image', 'mimes:jpg,jpeg,png', 'max:2048'],
+            'new_images.*' => ['image', 'mimes:jpg,jpeg,png', 'max:5120'],
             'deleted_images' => ['nullable', 'array'],
             'deleted_images.*' => ['integer', 'exists:review_images,id'],
         ]);
@@ -134,15 +129,11 @@ class ReviewController extends Controller
             $deleteIds = $request->input('deleted_images', []);
             if (is_array($deleteIds) && count($deleteIds) > 0) {
                 $imagesToDelete = $review->images()->whereIn('id', $deleteIds)->get();
-
                 foreach ($imagesToDelete as $img) {
-                    // Check if it is a full URL (new data) or relative path (old data)
                     if (Str::startsWith($img->path, 'http')) {
-                        // Extract Public ID from URL: 'reviews/filename'
                         $publicId = 'reviews/' . pathinfo($img->path, PATHINFO_FILENAME);
                         cloudinary()->uploadApi()->destroy($publicId);
                     } else {
-                        // Fallback for old relative paths
                         if (Storage::disk('cloudinary')->exists($img->path)) {
                             Storage::disk('cloudinary')->delete($img->path);
                         }
@@ -158,7 +149,7 @@ class ReviewController extends Controller
                     ]);
                     ReviewImage::create([
                         'review_id' => $review->id,
-                        'path' => $result->getSecurePath()
+                        'path' => $result['secure_url']
                     ]);
                 }
             }

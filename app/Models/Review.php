@@ -27,35 +27,43 @@ class Review extends Model
         'edited_at' => 'datetime',
     ];
 
+    // Satu review pasti punya satu user
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    // Satu review pasti punya satu restaurant
     public function restaurant()
     {
         return $this->belongsTo(Restaurant::class);
     }
 
+    // Satu review bisa punya banyak kategori
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'category_review');
     }
 
+    // Satu review bisa punya banyak gambar
     public function images()
     {
         return $this->hasMany(ReviewImage::class);
     }
 
+    // Satu review bisa punya banyak vote
     public function votes()
     {
         return $this->hasMany(Vote::class);
     }
 
+    // Menghitung skor total dari vote
     public function getScoreAttribute()
     {
         return $this->votes->sum('vote_value');
     }
+
+    // Mendapatkan vote user saat ini untuk review ini
     public function getCurrentUserVoteAttribute()
     {
         if (!Auth::check()) return 0;

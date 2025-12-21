@@ -37,7 +37,7 @@
 
             {{-- Phone --}}
             <div class="col-md-6">
-                <div class="form-floating">
+                <div class="form-floating"> 
                     <input type="text" class="form-control shadow-sm rounded-3 @error('phone_number') is-invalid @enderror"
                         id="phone_number" name="phone_number" placeholder="0812..."
                         value="{{ old('phone_number') }}" required>

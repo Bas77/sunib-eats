@@ -24,21 +24,25 @@ class Restaurant extends Model
         'hot_score',
     ];
 
+    // Satu restaurant bisa punya banyak promo
     public function promotions()
     {
         return $this->hasMany(Promotion::class);
     }
 
+    // Satu restaurant bisa punya banyak review
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
 
+    // Satu restaurant bisa punya banyak kategori
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'category_restaurant');
     }
 
+    // Logic untuk ngasih simbol harga berdasarkan avg_price
     public function getPriceSymbolAttribute()
     {
         $price = $this->avg_price;
@@ -49,6 +53,7 @@ class Restaurant extends Model
         return '$$$$$';
     }
 
+    // Scope untuk search restaurant berdasarkan nama atau lokasi
     public function scopeSearch(Builder $query, $search)
     {
         return $query->when($search, function ($q) use ($search) {
@@ -59,6 +64,7 @@ class Restaurant extends Model
         });
     }
 
+    // Scope untuk filter restaurant berdasarkan range harga
     public function scopeFilterPrice(Builder $query, $level)
     {
         if (!$level) return $query;
@@ -72,6 +78,7 @@ class Restaurant extends Model
         });
     }
 
+    // Scope untuk filter restaurant berdasarkan kategori
     public function scopeFilterByCategories(Builder $query, $categories)
     {
         return $query->when($categories, function ($q) use ($categories) {
@@ -86,6 +93,7 @@ class Restaurant extends Model
         });
     }
 
+    // Scope untuk sorting restaurant berdasarkan kriteria tertentu
     public function scopeSortBy(Builder $query, $sort)
     {
         return $query->when($sort, function ($q) use ($sort) {

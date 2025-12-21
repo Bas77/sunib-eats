@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\View\View;
+use App\Models\User;
 
 class PasswordResetLinkController extends Controller
 {
@@ -15,7 +16,7 @@ class PasswordResetLinkController extends Controller
      */
     public function create(): View
     {
-        return view('auth.forgot-password');
+        return view('breeze.auth.forgot-password');
     }
 
     /**
@@ -27,18 +28,23 @@ class PasswordResetLinkController extends Controller
     {
         $request->validate([
             'email' => ['required', 'email'],
+            'phone_number' => ['required', 'string'],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        $user = User::where('email', $request->email)
+            ->where('phone_number', $request->phone_number)
+            ->first();
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        if (! $user) {
+            return back()->withInput($request->only('email', 'phone_number'))
+                ->withErrors(['email' => 'Email atau Nomor Telepon tidak cocok.']);
+        }
+
+        $token = Password::getRepository()->create($user);
+
+        return redirect()->route('password.reset', [
+            'token' => $token,
+            'email' => $user->email
+        ]);
     }
 }

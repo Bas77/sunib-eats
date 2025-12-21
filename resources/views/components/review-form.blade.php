@@ -70,16 +70,16 @@
                 <input type="file"
                     id="final-upload-input"
                     name="images[]"
-                    class="d-none"
+                    style="opacity: 0; position: absolute; z-index: -1; width: 0; height: 0;"
                     multiple>
 
                 <input type="file"
                     id="file-selector"
                     accept="image/*"
                     multiple
-                    class="d-none">
+                    style="opacity: 0; position: absolute; z-index: -1; width: 0; height: 0;">
 
-                <div class="form-text small text-muted mt-2">Format: JPG, PNG. Maks 2MB/foto.</div>
+                <div class="form-text small text-muted mt-2">Format: JPG, PNG. Maks 5MB/foto.</div>
             </div>
 
             <button type="submit" class="btn btn-primary w-100 fw-bold">Kirim Ulasan</button>

@@ -35,7 +35,7 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
 
             // yang biasanya ditambahin
-            'phone_number' => ['required', 'string', 'max:20'],
+            'phone_number' => ['required', 'string', 'max:20', 'unique:' . User::class],
             'date_of_birth' => ['required', 'date'],
             'gender' => ['nullable', 'string', 'in:male,female,other'],
             'bio' => ['nullable', 'string', 'max:1000'],

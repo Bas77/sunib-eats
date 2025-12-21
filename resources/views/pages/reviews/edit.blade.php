@@ -12,7 +12,10 @@
                     </div>
 
                     <div class="card-body p-4">
-                        <form action="{{ route('reviews.update', $review->id) }}" method="POST" enctype="multipart/form-data">
+                        <form id="edit-review-form"
+                            action="{{ route('reviews.update', $review->id) }}"
+                            method="POST"
+                            enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
@@ -36,20 +39,12 @@
                                 <label class="form-label small text-muted">Foto Makanan (Maks 3)</label>
 
                                 <div class="d-flex gap-2 flex-wrap" id="image-upload-container">
-
                                     @foreach($review->images as $img)
                                     <div class="preview-box existing-image"
-                                        style="background-image: url('{{ 
-                                            Str::startsWith($img->path, 'http') 
-                                                ? $img->path 
-                                                : Storage::url($img->path) 
-                                        }}');">
-
-                                        <div class="remove-btn" onclick="removeExistingImage(this, '{{ $img->id }}')">
+                                        style="background-image: url('{{ Str::startsWith($img->path, 'http') ? $img->path : Storage::url($img->path) }}');">
+                                        <div class="remove-btn remove-existing" data-id="{{ $img->id }}">
                                             <i class="bi bi-x"></i>
                                         </div>
-
-                                        <input type="hidden" name="deleted_images[]" value="" class="deleted-image-input">
                                     </div>
                                     @endforeach
 
@@ -58,10 +53,12 @@
                                     </div>
                                 </div>
 
-                                <input type="file" id="final-upload-input" name="new_images[]" class="d-none" multiple>
-                                <input type="file" id="file-selector" accept="image/*" multiple class="d-none">
+                                <input type="file" id="final-upload-input" name="new_images[]" hidden multiple>
+                                <input type="file" id="file-selector" accept="image/*" hidden multiple>
 
-                                <div class="form-text small text-muted mt-2">Format: JPG, PNG. Maks 2MB/foto.</div>
+                                <div class="form-text small text-muted mt-2">
+                                    Format: JPG, PNG. Maks 5MB/foto.
+                                </div>
                             </div>
 
                             <div class="d-flex gap-2">
