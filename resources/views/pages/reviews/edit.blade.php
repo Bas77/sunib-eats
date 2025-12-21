@@ -12,6 +12,15 @@
                     </div>
 
                     <div class="card-body p-4">
+                        @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
                         <form action="{{ route('reviews.update', $review->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
@@ -58,7 +67,7 @@
                                     </div>
                                 </div>
 
-                                <input type="file" id="final-upload-input" name="new_images[]" class="d-none" multiple>
+                                <input type="file   " id="final-upload-input" name="new_images[]" class="d-none" multiple>
                                 <input type="file" id="file-selector" accept="image/*" multiple class="d-none">
 
                                 <div class="form-text small text-muted mt-2">Format: JPG, PNG. Maks 2MB/foto.</div>
